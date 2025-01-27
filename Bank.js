@@ -1,63 +1,65 @@
 // 🏦 Bank and Account System 
 // Bank Class: Manages multiple accounts
-class Bank {
-    constructor() {
-        this.accounts = []; // Stores all accounts in the bank
-    }
-
-    // Method to create a new account
-    createAccount(name, initialDeposit) {
-        const newAccount = new Account(name, initialDeposit);
-        this.accounts.push(newAccount);
-        return newAccount;
-    }
-
-}
-
-// Account Class: Represents a single user's account
 class Account {
-    constructor(name, balance = 0) {
-        this.name = name; // Account holder's name
-        this.balance = balance; // Initial balance (default is 0)
-        this.transactionHistory = []; // Keeps a record of all transactions
+    constructor(name, balance) {
+        this.name = name;
+        this.balance = balance;
+        this.transactionHistory = []; // Stores objects like { transactionType, amount }
     }
 
-    // Method to deposit money
     deposit(amount) {
         if (amount > 0) {
             this.balance += amount;
             this.transactionHistory.push({ transactionType: 'Deposit', amount });
+            return true;
         } else {
-            console.log('Deposit amount must be positive');
+            return false;
         }
     }
 
-    // Method to withdraw money
     withdraw(amount) {
         if (amount > 0 && amount <= this.balance) {
             this.balance -= amount;
             this.transactionHistory.push({ transactionType: 'Withdrawal', amount });
+            return true;
         } else {
-            console.log('Invalid withdrawal amount');
+            return false;
         }
     }
 
-    // Method to transfer money to another account
     transfer(amount, recipientAccount) {
         if (amount > 0 && amount <= this.balance) {
-            this.withdraw(amount); // Withdraw from sender's account
-            recipientAccount.deposit(amount); // Deposit to recipient's account
+            this.balance -= amount;
             this.transactionHistory.push({ transactionType: 'Transfer', amount, to: recipientAccount.name });
+
+            // Update recipient's balance and transaction history
+            recipientAccount.balance += amount;
             recipientAccount.transactionHistory.push({ transactionType: 'Received', amount, from: this.name });
+
+            return true;
         } else {
-            console.log('Invalid transfer amount');
+            return false;
         }
     }
 
-    // Method to check the account balance
     checkBalance() {
         return this.balance;
     }
+}
+
+
+class Bank {
+    constructor() {
+        this.accounts = [];
+    }
+
+    createAccount(name, initialDeposit = 0) {
+        const account = new Account(name, initialDeposit);
+        this.accounts.push(account);
+        return account;
+    }
+
+    
 }
 
 //<-------------------------------DO NOT WRITE BELOW THIS LINE------------------------------>
